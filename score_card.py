@@ -8,7 +8,6 @@ logging.basicConfig(filename="yatzy.log",
 
 class Score_card(object):
     rounds_played = 0
-    rounds_left = len(score_card_top_section) + len(score_card_bottom_section) - rounds_played
     score_card_top_section = []
     score_card_bottom_section = []
     score_card_top_section_sum = 0
@@ -23,15 +22,18 @@ class Score_card(object):
         self.score_card_bottom_section.append(Score_card_category_two_pairs())
         self.score_card_bottom_section.append(Score_card_category_multiples(3, "Three of a kind"))
         self.score_card_bottom_section.append(Score_card_category_multiples(4, "Four of a kind"))
+        self.score_card_bottom_section.append(Score_card_category_full_house())
         self.score_card_bottom_section.append(Score_card_category_straight(1, 5, "Small straight"))
         self.score_card_bottom_section.append(Score_card_category_straight(2, 6, "Large straight"))
         self.score_card_bottom_section.append(Score_card_category_chance("Chance"))
         self.score_card_bottom_section.append(Score_card_category_multiples(5, "Yatzy"))
+        self.rounds_left = len(self.score_card_top_section) + len(self.score_card_bottom_section) - self.rounds_played
 
     def print_card(self):
         self.score_card_sum()
+        self.rounds_left = len(self.score_card_top_section) + len(self.score_card_bottom_section) - self.rounds_played
         print("\nThis is the score after " + str(self.rounds_played) + " rounds played:")
-        for x in score_card_top_section:
+        for x in self.score_card_top_section:
             scratched_string = ""
             if x.scratched == True:
                 scratched_string = "(Scracthed)"
@@ -258,7 +260,7 @@ class Score_card_category_straight(Score_card_category):
             else:
                 return False
 
-class Score_card_category_chance (Score_card_category):
+class Score_card_category_chance(Score_card_category):
 # Chance category can never be scratched
     def __init__(self, description):
         self.description = description
@@ -273,4 +275,34 @@ class Score_card_category_chance (Score_card_category):
 
         return True
 
-# just a comment
+class Score_card_category_full_house(Score_card_category):
+
+    def __init__(self):
+        self.description = "Full house"
+
+    def try_to_score(self, dices):
+
+        if super().try_to_score(self) == False:
+            return False
+
+        dice_values_list = []
+        for x in dices:
+            dice_values_list.append(x.value)
+
+        c = Counter(dice_values_list)
+        logging.debug("Multiples counter, full house category: " + str(c))
+        logging.debug("Value of c[0]: " + str(c[0]))
+
+        used_dices = 0
+        for key, value in c.items():
+            logging.debug("key: " + str(key) + "value: " + str(value) + "used_dices: " + str(used_dices))
+            if value > 1:
+                used_dices = used_dices + value
+                self.score = self.score + key * value
+
+        if used_dices == 5:
+            return True
+        else:
+            self.score = 0
+            print("You do not have a full house")
+            return False
