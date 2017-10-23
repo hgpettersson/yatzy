@@ -9,4 +9,5 @@ Improvements that can be made:
 - Add input validation
   - If giving invalid dice number, we get a list out-of-range error.
 - Add x number of players (only single player now)
+- Save/resume the game mid-game
 - Better UX of choosing two pairs
