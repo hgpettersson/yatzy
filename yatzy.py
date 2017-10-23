@@ -6,6 +6,8 @@ from score_card import *
 from dice import *
 from collections import Counter
 
+f = 3
+
 logging.basicConfig(filename="yatzy.log",
                     level=logging.DEBUG,
                     format="%(asctime)s:%(levelname)s:%(message)s")
