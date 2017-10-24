@@ -1,12 +1,10 @@
-# This is a yatzy game created for learning purposes
+# This is a yatzy game created to learn python
 
 import sys; print(sys.version)
 import logging
 from score_card import *
 from dice import *
 from collections import Counter
-
-f = 3
 
 logging.basicConfig(filename="yatzy.log",
                     level=logging.DEBUG,
@@ -38,14 +36,20 @@ def start_round(score_card):
             for y in range(len(dice_list)): # Not really needed to assign keep = True to all dices but may be handy later on
                 dice_list[y].keep = True
             break
-        user_input = input("\nWhat dices do you want to keep? Enter the dice number, separated by , (e.g. 1,2,5). If you want to keep none, enter 0 :") # Add validation, including not being able to enter same dice number twice
-        for z in range(len(user_input)):
-            if user_input[z].isdigit() == True:
-                if int(user_input[z]) == 0:
-                    logging.debug("User entered 0")
-                    break
-                dice_no = int(user_input[z]) - 1
-                dice_list[dice_no].keep = True
+        valid_input = False
+        while valid_input == False:
+            user_input = input("\nWhat dices do you want to keep? Enter the dice number, separated by , (e.g. 1,2,5). If you want to keep none, enter 0 :") # Add validation, including not being able to enter same dice number twice
+            for c in user_input:
+                if c.isdigit() == True and int(c) <= (len(dice_list) + 1):
+                    valid_input = True
+                    if int(c) == 0:
+                        logging.debug("User entered 0")
+                        break
+                    dice_no = int(c) - 1
+                    dice_list[dice_no].keep = True
+
+            if valid_input == False:
+                print("You need enter a valid dice number or 0\n")
 
     score_card.score_card_try_to_score(dice_list)
 
