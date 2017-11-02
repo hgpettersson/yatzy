@@ -8,15 +8,25 @@ from collections import Counter
 
 logging.basicConfig(filename="yatzy.log",
                     level=logging.DEBUG,
-                    format="%(asctime)s:%(levelname)s:%(message)s")
+                    format="%(asctime)s,%(msecs)d %(levelname)-8s [%(filename)s:%(lineno)d] %(message)s")
 
 def play_yatzy():
-    print("Welcome to Henrik's Yatzy game.\n")
-    my_score_card = Score_card(1)
-    my_score_card.print_card()
-    while my_score_card.rounds_left != 0:
-        start_round(my_score_card)
-        my_score_card.print_card()
+    user_input = input("Welcome to Henrik's Yatzy game.\nPlease enter the name of the players, separated by , (e.g. John, Lisa): ")
+
+    score_card = []
+    player_name = ""
+    for c in user_input:
+        if c != " " and c != ",":
+            player_name = player_name + c
+        if c == ",":
+            score_card.append(Score_card(player_name))
+            player_name = ""
+    score_card.append(Score_card(player_name))
+    logging.debug("score_card list len" + str(len(score_card)))
+
+    while score_card[len(score_card)-1].rounds_left != 0:
+        for s in score_card:
+            start_round(s)
     print("Game over. Your final score is X")
 
 def start_round(score_card):
@@ -24,6 +34,11 @@ def start_round(score_card):
     dice_list = []
     attempts = 3
     round_done = False
+    print("-----------------------------------")
+    print("Round " + str(score_card.rounds_played + 1) + ", " + score_card.player_name + "'s turn.\n")
+    print("-----------------------------------")
+    score_card.print_card()
+    print("-----------------------------------")
     for x in range(5):
         dice_list.append(Dice(6))
     for x in range(attempts):

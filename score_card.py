@@ -7,15 +7,15 @@ logging.basicConfig(filename="yatzy.log",
                     format="%(asctime)s:%(levelname)s:%(message)s")
 
 class Score_card(object):
-    rounds_played = 0
-    score_card_top_section = []
-    score_card_bottom_section = []
-    score_card_top_section_sum = 0
-    score_card_top_section_bonus = 0
-    score_card_total_sum = 0
 
-    def __init__(self, number_of_players):
-        #only 1 player supported in first version
+    def __init__(self, player_name):
+        self.rounds_played = 0
+        self.score_card_top_section_sum = 0
+        self.score_card_top_section_bonus = 0
+        self.score_card_total_sum = 0
+        self.score_card_top_section = []
+        self.score_card_bottom_section = []
+        self.player_name = player_name
         for x in range(6):
             self.score_card_top_section.append(Score_card_category_top_section(x+1))
         self.score_card_bottom_section.append(Score_card_category_multiples(2, "Pair"))
@@ -32,7 +32,6 @@ class Score_card(object):
     def print_card(self):
         self.score_card_sum()
         self.rounds_left = len(self.score_card_top_section) + len(self.score_card_bottom_section) - self.rounds_played
-        print("\nThis is the score after " + str(self.rounds_played) + " rounds played:")
         for x in self.score_card_top_section:
             scratched_string = ""
             if x.scratched == True:
@@ -85,12 +84,12 @@ class Score_card(object):
 
 
 class Score_card_category(object):
-    empty = True
-    score = 0
-    scratched = False
-    description = ""
+
     def __init__(self):
-        pass
+        self.empty = True
+        self.score = 0
+        self.scratched = False
+        self.description = ""
 
     def try_to_score(self, dices):
     # accepts a list of dices as input. Returns the score if successful, else False.
@@ -118,6 +117,7 @@ class Score_card_category(object):
 class Score_card_category_top_section(Score_card_category):
     def __init__(self, number):
         #number refers to 1-6
+        Score_card_category.__init__(self)
         self.number = number
         self.description = str(number) + "s"
 
@@ -140,8 +140,10 @@ class Score_card_category_top_section(Score_card_category):
 class Score_card_category_multiples(Score_card_category):
     #This class is used to create the pair, three of a kind, four of a kind and yatzy (five of a kind).
     def __init__(self, multiple, description):
+        Score_card_category.__init__(self)
         self.description = description
         self.multiple = multiple
+
     def try_to_score(self, dices):
         #Improvement idea: Have try to score accept a dice number that it should try, rather than asking the user what number to go for if there are several multiples among the dice. This will make it more general and easier to reuse with the two pairs class.
         if super().try_to_score(dices) == False:
@@ -190,9 +192,10 @@ class Score_card_category_multiples(Score_card_category):
                 return False
 
 class Score_card_category_two_pairs(Score_card_category):
-    description = "Two pairs"
     def __init__(self):
-        pass
+        Score_card_category.__init__(self)
+        self.description = "Two pairs"
+
 
     def try_to_score(self, dices):
         # Reuses the Multpiples class
@@ -226,12 +229,12 @@ class Score_card_category_two_pairs(Score_card_category):
 class Score_card_category_straight(Score_card_category):
 
     def __init__(self, straight_start, straight_end, description):
+        Score_card_category.__init__(self)
         self.straight_start = straight_start
         self.straight_end = straight_end
         self.description = description
 
     def try_to_score(self, dices):
-
         if super().try_to_score(self) == False:
             return False
 
@@ -263,10 +266,10 @@ class Score_card_category_straight(Score_card_category):
 class Score_card_category_chance(Score_card_category):
 # Chance category can never be scratched
     def __init__(self, description):
+        Score_card_category.__init__(self)
         self.description = description
 
     def try_to_score(self, dices):
-
         if super().try_to_score(self) == False:
             return False
 
@@ -278,6 +281,7 @@ class Score_card_category_chance(Score_card_category):
 class Score_card_category_full_house(Score_card_category):
 
     def __init__(self):
+        Score_card_category.__init__(self)
         self.description = "Full house"
 
     def try_to_score(self, dices):
